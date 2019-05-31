@@ -1,7 +1,8 @@
 function Get-sbSystemInfo {
     [cmdletbinding()]
     param(
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [parameter(Mandatory = $true,
+            ValueFromPipeline = $true)]
         [string[]]$ComputerName,
 
         [parameter(Mandatory = $false)]
@@ -27,6 +28,7 @@ function Get-sbSystemInfo {
             try {
                 Write-Verbose "[PROCESS] Attempting connection to [$computer] on [$Protocol]"
                 $cimsession = New-CimSession  @sessionparams
+                Write-Verbose "[PROCESS] [+] Connected"
 
                 Write-Verbose "[PROCESS] Getting BIOS information for [$computer]"
                 $cimparams = @{
@@ -51,6 +53,9 @@ function Get-sbSystemInfo {
                     'BIOSSerial'   = $bios.SerialNumber
                     'OSVersion'    = $operatingsystem.Version
                 }
+
+                Write-Verbose "[PROCESS] [-] Closing [$Protocol] connection to [$computer]"
+                Get-CimSession -ComputerName $computer | Remove-CimSession
 
             } catch {
                 Write-Verbose "[PROCESS] Failed to connect to [$computer] on [$Protocol]"
