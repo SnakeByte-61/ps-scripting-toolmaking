@@ -8,3 +8,5 @@ Import notes from Main PC
 
 ### Dynamic Parameters
 
+Something to use _rarely_, in situations where the same goal cannot be achieved using standard parameters or parameter sets.
+
