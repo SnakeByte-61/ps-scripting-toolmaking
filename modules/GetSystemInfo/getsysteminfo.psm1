@@ -1,19 +1,20 @@
 function Get-sbSystemInfo {
     [cmdletbinding()]
     param(
-        [parameter(Mandatory = $true,
+        [parameter(Position = 1, Mandatory = $true,
             ValueFromPipeline = $true)]
+        [Alias("cn")]
         [string[]]$ComputerName,
 
-        [parameter(Mandatory = $false)]
+        [parameter(Position = 2, Mandatory = $false)]
         [validateset('dcom', 'wsman')]
         [string]$Protocol = 'dcom',
 
-        [parameter(Mandatory = $false)]
+        [parameter(Position = 3, Mandatory = $false)]
         [switch]$TryAnotherProtocol = $false
     )
 
-    BEGIN {}
+    BEGIN { }
 
     PROCESS {
 
@@ -57,32 +58,32 @@ function Get-sbSystemInfo {
                 Write-Verbose "[PROCESS] [-] Closing [$Protocol] connection to [$computer]"
                 Get-CimSession -ComputerName $computer | Remove-CimSession
 
-            } catch {
-                Write-Verbose "[PROCESS] Failed to connect to [$computer] on [$Protocol]"
-                if ($TryAnotherProtocol) {
-                    if ($Protocol -eq 'dcom') {
-                        # Specifying "$newprotocol" here because if we re-run with fallback, we don't want to
-                        # change "$protocol" itself, as the remaining computers will just run with the fallback
-                        # protocol each time, which will invalidate the original protocol selection and possibly
-                        # enrage the user.
-                        $newprotocol = 'wsman'
-                    } else {
-                        $newprotocol = 'dcom'
-                    } #if protocol
-                    $params = @{
-                        'ComputerName'       = $computer
-                        'Protocol'           = $newprotocol
-                        'TryAnotherProtocol' = $false
-                    }
+        } catch {
+            Write-Verbose "[PROCESS] Failed to connect to [$computer] on [$Protocol]"
+            if ($TryAnotherProtocol) {
+                if ($Protocol -eq 'dcom') {
+                    # Specifying "$newprotocol" here because if we re-run with fallback, we don't want to
+                    # change "$protocol" itself, as the remaining computers will just run with the fallback
+                    # protocol each time, which will invalidate the original protocol selection and possibly
+                    # enrage the user.
+                    $newprotocol = 'wsman'
+                } else {
+                    $newprotocol = 'dcom'
+                } #if protocol
+                $params = @{
+                    'ComputerName'       = $computer
+                    'Protocol'           = $newprotocol
+                    'TryAnotherProtocol' = $false
+                }
 
-                    Get-sbSystemInfo @params
-                } #if tryanotherprotocol
-            } #trycatch
+                Get-sbSystemInfo @params
+            } #if tryanotherprotocol
+        } #trycatch
 
-        } #foreach
+    } #foreach
 
-    } #process
+} #process
 
-    END {}
+END { }
 
 } #function
