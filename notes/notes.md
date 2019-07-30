@@ -10,3 +10,6 @@ Import notes from Main PC
 
 Something to use _rarely_, in situations where the same goal cannot be achieved using standard parameters or parameter sets.
 
+Automatic Variable Example:
+
+$this - In a script block that defines a script property or script method, the $This variable refers to the object that is being extended.
